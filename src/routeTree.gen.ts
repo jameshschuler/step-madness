@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UploadIndexRouteImport } from './routes/upload/index'
 import { Route as TeamsIndexRouteImport } from './routes/teams.index'
+import { Route as ScheduleIndexRouteImport } from './routes/schedule.index'
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard.index'
+import { Route as AboutIndexRouteImport } from './routes/about.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,42 +31,73 @@ const TeamsIndexRoute = TeamsIndexRouteImport.update({
   path: '/teams/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScheduleIndexRoute = ScheduleIndexRouteImport.update({
+  id: '/schedule/',
+  path: '/schedule/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeaderboardIndexRoute = LeaderboardIndexRouteImport.update({
   id: '/leaderboard/',
   path: '/leaderboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/about/',
+  path: '/about/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about/': typeof AboutIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
+  '/schedule/': typeof ScheduleIndexRoute
   '/teams/': typeof TeamsIndexRoute
   '/upload/': typeof UploadIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutIndexRoute
   '/leaderboard': typeof LeaderboardIndexRoute
+  '/schedule': typeof ScheduleIndexRoute
   '/teams': typeof TeamsIndexRoute
   '/upload': typeof UploadIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about/': typeof AboutIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
+  '/schedule/': typeof ScheduleIndexRoute
   '/teams/': typeof TeamsIndexRoute
   '/upload/': typeof UploadIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaderboard/' | '/teams/' | '/upload/'
+  fullPaths:
+    | '/'
+    | '/about/'
+    | '/leaderboard/'
+    | '/schedule/'
+    | '/teams/'
+    | '/upload/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaderboard' | '/teams' | '/upload'
-  id: '__root__' | '/' | '/leaderboard/' | '/teams/' | '/upload/'
+  to: '/' | '/about' | '/leaderboard' | '/schedule' | '/teams' | '/upload'
+  id:
+    | '__root__'
+    | '/'
+    | '/about/'
+    | '/leaderboard/'
+    | '/schedule/'
+    | '/teams/'
+    | '/upload/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutIndexRoute: typeof AboutIndexRoute
   LeaderboardIndexRoute: typeof LeaderboardIndexRoute
+  ScheduleIndexRoute: typeof ScheduleIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
   UploadIndexRoute: typeof UploadIndexRoute
 }
@@ -92,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schedule/': {
+      id: '/schedule/'
+      path: '/schedule'
+      fullPath: '/schedule/'
+      preLoaderRoute: typeof ScheduleIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leaderboard/': {
       id: '/leaderboard/'
       path: '/leaderboard'
@@ -99,12 +139,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about/'
+      preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutIndexRoute: AboutIndexRoute,
   LeaderboardIndexRoute: LeaderboardIndexRoute,
+  ScheduleIndexRoute: ScheduleIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
   UploadIndexRoute: UploadIndexRoute,
 }
