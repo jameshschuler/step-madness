@@ -2,16 +2,16 @@
 - Get deployed to render
 - Verify deployment
 
-Win = 3
+Win = 2
 Loser = 1
 Avg more than 6,000 steps/day = 1
 
 Snail, Worm, Shrimp, Fish
 
-Team #1 TBD
-Team #2 TBD
-Team #3 TBD
-Team #4 TBD
+Team #1 Fish
+Team #2 Shrimp
+Team #3 Snail
+Team #4 Worm
 Week #1 (Sunday, March 1st - Saturday, March 7th)
 Team #1 vs Team #2
 Team #3 vs Team #4

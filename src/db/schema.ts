@@ -5,17 +5,6 @@ import {
   primaryKey,
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core'
-import { sql } from 'drizzle-orm'
-
-// export const todos = sqliteTable('todos', {
-//   id: integer({ mode: 'number' }).primaryKey({
-//     autoIncrement: true,
-//   }),
-//   title: text().notNull(),
-//   createdAt: integer('created_at', { mode: 'timestamp' }).default(
-//     sql`(unixepoch())`,
-//   ),
-// })
 
 // 1. Challenges (The overall event)
 export const challenges = sqliteTable('challenges', {
@@ -45,8 +34,12 @@ export const players = sqliteTable('players', {
 export const teamPlayers = sqliteTable(
   'team_players',
   {
-    teamId: integer('team_id').references(() => teams.id),
-    playerId: integer('player_id').references(() => players.id),
+    teamId: integer('team_id')
+      .notNull()
+      .references(() => teams.id, { onDelete: 'cascade' }),
+    playerId: integer('player_id')
+      .notNull()
+      .references(() => players.id, { onDelete: 'cascade' }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.teamId, t.playerId] }),
@@ -86,6 +79,9 @@ export const matchups = sqliteTable('matchups', {
   isPlayoff: integer('is_playoff', { mode: 'boolean' }).default(false),
   seed1: integer('seed_1'), // e.g., 1
   seed2: integer('seed_2'), // e.g., 4
+  status: text('status', { enum: ['pending', 'live', 'completed'] }).default(
+    'pending',
+  ),
 })
 
 // 7. Matchup Results (The Scoreboard)
