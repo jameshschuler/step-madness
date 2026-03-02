@@ -31,6 +31,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
           if (!teamId)
             return {
               name: 'TBD',
+              displayName: 'TBD',
               avatar: 'Target',
               avg: 0,
               total: 0,
@@ -69,6 +70,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
 
           return {
             name: teamInfo?.name ?? 'Unknown',
+            displayName: `Team ${teamInfo?.name ?? 'Unknown'}`,
             avatar: teamInfo?.avatar ?? 'Target',
             avg,
             total,

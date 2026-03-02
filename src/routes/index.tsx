@@ -1,8 +1,8 @@
-import { SwipeableMatchups } from '@/components/SwipeableMatchups'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { z } from 'zod'
 import { zodValidator } from '@tanstack/zod-adapter'
 import { getDashboardData } from '@/services/dashboard'
+import { Matchups } from '@/components/Matchups'
 
 const dashboardSearchSchema = z.object({
   week: z.number().catch(1),
@@ -68,7 +68,7 @@ function Dashboard() {
       </nav>
 
       {matchupsData.length > 0 ? (
-        <SwipeableMatchups matchups={matchupsData} />
+        <Matchups matchups={matchupsData} />
       ) : (
         <div className="text-center py-20 text-emerald-900/40 font-bold uppercase italic">
           No matchups found

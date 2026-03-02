@@ -8,36 +8,31 @@ import {
 } from './ui/carousel'
 import { iconMap } from '@/lib/constants'
 
-interface SwipeableMatchupsProps {
-  matchups: {
+interface Team {
+  name: string
+  displayName: string
+  avatar: string
+  avg: string | number
+  total: number
+  players: {
+    name: string
     id: number
-    startDate: Date
-    team1: {
-      name: string
-      avatar: string
-      avg: string | number
-      total: number
-      players: {
-        name: string
-        id: number
-        steps: number
-      }[]
-    }
-    team2: {
-      name: string
-      avatar: string
-      avg: string | number
-      total: number
-      players: {
-        name: string
-        id: number
-        steps: number
-      }[]
-    }
+    steps: number
   }[]
 }
 
-export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
+interface Matchup {
+  id: number
+  startDate: Date
+  team1: Team
+  team2: Team
+}
+
+interface MatchupsProps {
+  matchups: Matchup[]
+}
+
+export function Matchups({ matchups }: MatchupsProps) {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [count, setCount] = useState(0)
@@ -52,6 +47,17 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
 
   return (
     <Carousel setApi={setApi} className="w-full relative">
+      {/* CAROUSEL DOTS */}
+      <div className="flex justify-center gap-2 mb-6">
+        {Array.from({ length: count }).map((_, i) => (
+          <div
+            key={i}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              current === i + 1 ? 'bg-emerald-500 w-6' : 'bg-emerald-200 w-1.5'
+            }`}
+          />
+        ))}
+      </div>
       <CarouselContent>
         {matchups.map((match, idx) => {
           const Team1Icon =
@@ -81,7 +87,7 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
                     <div className="flex flex-col items-center justify-center gap-1 mb-1">
                       <Team1Icon size={16} className="text-emerald-500/50" />
                       <div className="text-emerald-600/50 text-[10px] font-black uppercase truncate max-w-[80px]">
-                        Team {match.team1.name}
+                        {match.team1.displayName}
                       </div>
                     </div>
                     <div className="text-4xl font-black text-emerald-950 tracking-tighter">
@@ -101,7 +107,7 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
                     <div className="flex flex-col items-center justify-center gap-1 mb-1">
                       <Team2Icon size={16} className="text-rose-500/50" />
                       <div className="text-rose-600/50 text-[10px] font-black uppercase truncate max-w-[80px]">
-                        Team {match.team2.name}
+                        {match.team2.displayName}
                       </div>
                     </div>
                     <div className="text-4xl font-black text-emerald-950 tracking-tighter">
@@ -132,7 +138,7 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
                 {/* Team 1 Stats */}
                 <div className="bg-white p-5 rounded-[2.5rem] border-2 border-emerald-500/20 shadow-sm text-center">
                   <div className="text-[10px] uppercase font-black text-emerald-700 tracking-[0.15em] mb-1 truncate px-2">
-                    Team {match.team1.name}
+                    {match.team1.displayName}
                   </div>
 
                   <div className="flex items-baseline justify-center gap-0.5">
@@ -151,7 +157,7 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
                 {/* Team 2 Stats */}
                 <div className="bg-white p-5 rounded-[2.5rem] border-2 border-rose-500/20 shadow-sm text-center">
                   <div className="text-[10px] uppercase font-black text-rose-700 tracking-[0.15em] mb-1 truncate px-2">
-                    Team {match.team2.name}
+                    {match.team2.displayName}
                   </div>
 
                   <div className="flex items-baseline justify-center gap-0.5">
@@ -172,11 +178,11 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
               <div className="mt-8 bg-white rounded-[2rem] p-6 mb-1 shadow-sm ring-1 ring-emerald-100/30">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-[10px] font-black uppercase tracking-widest text-emerald-600">
-                    Team {match.team1.name}
+                    {match.team1.displayName}
                   </h2>
                   <Swords size={16} className="text-emerald-100" />
                   <h2 className="text-[10px] font-black uppercase tracking-widest text-rose-400">
-                    Team {match.team2.name}
+                    {match.team2.displayName}
                   </h2>
                 </div>
 
@@ -236,18 +242,6 @@ export function SwipeableMatchups({ matchups }: SwipeableMatchupsProps) {
           )
         })}
       </CarouselContent>
-
-      {/* CAROUSEL DOTS */}
-      <div className="flex justify-center gap-2 mt-6">
-        {Array.from({ length: count }).map((_, i) => (
-          <div
-            key={i}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              current === i + 1 ? 'bg-emerald-500 w-6' : 'bg-emerald-200 w-1.5'
-            }`}
-          />
-        ))}
-      </div>
     </Carousel>
   )
 }
