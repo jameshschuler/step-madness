@@ -1,6 +1,7 @@
-- Seed players, teams, schedule, match ups
-- Get deployed to render
-- Verify deployment
+- Add "Finalize week" page with action to update leaderboard and matchup_results
+- Add team record to wherever team is displayed
+- Show leaderboard and matchup_results on UI
+- Show a "last synced" datetime on dashboard
 
 Win = 2
 Loser = 1

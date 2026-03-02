@@ -35,19 +35,19 @@ export function LeaderboardTab() {
         </p>
       </header>
 
-      <Tabs defaultValue="individuals" className="w-full">
+      <Tabs defaultValue="teams" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-emerald-100/50 p-1 rounded-2xl border border-emerald-100/50">
-          <TabsTrigger
-            value="individuals"
-            className="rounded-xl font-black text-xs data-[state=active]:bg-white data-[state=active]:text-emerald-700"
-          >
-            PLAYERS
-          </TabsTrigger>
           <TabsTrigger
             value="teams"
             className="rounded-xl font-black text-xs data-[state=active]:bg-white data-[state=active]:text-emerald-700"
           >
             TEAMS
+          </TabsTrigger>
+          <TabsTrigger
+            value="individuals"
+            className="rounded-xl font-black text-xs data-[state=active]:bg-white data-[state=active]:text-emerald-700"
+          >
+            PLAYERS
           </TabsTrigger>
         </TabsList>
 

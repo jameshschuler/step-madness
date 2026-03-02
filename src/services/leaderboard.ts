@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/db'
 import { teams, players, teamPlayers, dailyPerformance } from '@/db/schema'
-import { eq, sql, desc } from 'drizzle-orm'
+import { eq, sql, desc, asc } from 'drizzle-orm'
 
 export const getIndividualLeaderboard = createServerFn({
   method: 'GET',
@@ -20,8 +20,8 @@ export const getIndividualLeaderboard = createServerFn({
     .leftJoin(teams, eq(teamPlayers.teamId, teams.id))
     .leftJoin(dailyPerformance, eq(players.id, dailyPerformance.playerId))
     .groupBy(players.id)
-    .orderBy(desc(sql`sum(${dailyPerformance.stepCount})`))
-    .limit(50) // Keep it performant
+    .orderBy(desc(sql`sum(${dailyPerformance.stepCount})`), asc(players.name))
+    .limit(50)
 })
 
 export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
