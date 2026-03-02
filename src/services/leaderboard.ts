@@ -1,0 +1,48 @@
+import { createServerFn } from '@tanstack/react-start'
+import { db } from '@/db'
+import { teams, players, teamPlayers, dailyPerformance } from '@/db/schema'
+import { eq, sql, desc } from 'drizzle-orm'
+
+export const getIndividualLeaderboard = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  return await db
+    .select({
+      id: players.id,
+      name: players.name,
+      avatar: players.avatar,
+      teamName: teams.name,
+      teamAvatar: teams.avatar,
+      totalSteps: sql<number>`sum(${dailyPerformance.stepCount})`,
+    })
+    .from(players)
+    .leftJoin(teamPlayers, eq(players.id, teamPlayers.playerId))
+    .leftJoin(teams, eq(teamPlayers.teamId, teams.id))
+    .leftJoin(dailyPerformance, eq(players.id, dailyPerformance.playerId))
+    .groupBy(players.id)
+    .orderBy(desc(sql`sum(${dailyPerformance.stepCount})`))
+    .limit(50) // Keep it performant
+})
+
+export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const result = await db
+      .select({
+        id: teams.id,
+        name: teams.name,
+        avatar: teams.avatar,
+        // Calculate the average steps across all players in the team
+        dailyAvg: sql<number>`round(avg(${dailyPerformance.stepCount}), 1)`,
+        totalSteps: sql<number>`sum(${dailyPerformance.stepCount})`,
+        playerCount: sql<number>`count(distinct ${players.id})`,
+      })
+      .from(teams)
+      .leftJoin(teamPlayers, eq(teams.id, teamPlayers.teamId))
+      .leftJoin(players, eq(teamPlayers.playerId, players.id))
+      .leftJoin(dailyPerformance, eq(players.id, dailyPerformance.playerId))
+      .groupBy(teams.id)
+      .orderBy(sql`avg(${dailyPerformance.stepCount}) desc`)
+
+    return result
+  },
+)

@@ -1,56 +1,23 @@
 import { createFileRoute, useLoaderData } from '@tanstack/react-router'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Trophy, Medal, Target, Zap } from 'lucide-react'
+import { Trophy, Medal, Target } from 'lucide-react'
 import { iconMap } from '@/lib/constants'
-import { createServerFn } from '@tanstack/react-start'
-import { db } from '@/db'
-import { teams, players, teamPlayers, dailyPerformance } from '@/db/schema'
-import { eq, sql, desc } from 'drizzle-orm'
+import {
+  getIndividualLeaderboard,
+  getTeamLeaderboard,
+} from '@/services/leaderboard'
 
-export const getIndividualLeaderboard = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return await db
-    .select({
-      id: players.id,
-      name: players.name,
-      avatar: players.avatar,
-      teamName: teams.name,
-      teamAvatar: teams.avatar,
-      totalSteps: sql<number>`sum(${dailyPerformance.stepCount})`,
-    })
-    .from(players)
-    .leftJoin(teamPlayers, eq(players.id, teamPlayers.playerId))
-    .leftJoin(teams, eq(teamPlayers.teamId, teams.id))
-    .leftJoin(dailyPerformance, eq(players.id, dailyPerformance.playerId))
-    .groupBy(players.id)
-    .orderBy(desc(sql`sum(${dailyPerformance.stepCount})`))
-    .limit(50) // Keep it performant
-})
-
-export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const result = await db
-      .select({
-        id: teams.id,
-        name: teams.name,
-        avatar: teams.avatar,
-        // Calculate the average steps across all players in the team
-        dailyAvg: sql<number>`round(avg(${dailyPerformance.stepCount}), 1)`,
-        totalSteps: sql<number>`sum(${dailyPerformance.stepCount})`,
-        playerCount: sql<number>`count(distinct ${players.id})`,
-      })
-      .from(teams)
-      .leftJoin(teamPlayers, eq(teams.id, teamPlayers.teamId))
-      .leftJoin(players, eq(teamPlayers.playerId, players.id))
-      .leftJoin(dailyPerformance, eq(players.id, dailyPerformance.playerId))
-      .groupBy(teams.id)
-      .orderBy(sql`avg(${dailyPerformance.stepCount}) desc`)
-
-    return result
+export const Route = createFileRoute('/leaderboard/')({
+  loader: async () => {
+    const [teamStats, individualStats] = await Promise.all([
+      getTeamLeaderboard(),
+      getIndividualLeaderboard(),
+    ])
+    return { teamStats, individualStats }
   },
-)
+  component: LeaderboardTab,
+})
 
 export function LeaderboardTab() {
   const { individualStats, teamStats } = useLoaderData({
@@ -134,7 +101,7 @@ export function LeaderboardTab() {
                       {player.name}
                     </p>
                     <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-600/60">
-                      {player.teamName || 'Free Agent'}
+                      Team {player.teamName || 'Free Agent'}
                     </p>
                   </div>
                 </div>
@@ -154,14 +121,13 @@ export function LeaderboardTab() {
         </TabsContent>
 
         <TabsContent value="teams" className="space-y-4 mt-6">
-          {teamStats.map((team, index) => (
+          {teamStats.map((team) => (
             <TeamRankCard
               key={team.id}
               name={team.name}
               avg={team.dailyAvg || 0}
               total={team.totalSteps || 0}
-              rank={index + 1}
-              avatar={team.avatar}
+              avatar={team.avatar ?? ''}
             />
           ))}
         </TabsContent>
@@ -170,7 +136,14 @@ export function LeaderboardTab() {
   )
 }
 
-function TeamRankCard({ name, avg, rank, avatar }: any) {
+interface TeamRankCardProps {
+  name: string
+  avg: number | string
+  total: number | string
+  avatar: string
+}
+
+function TeamRankCard({ name, avg, total, avatar }: TeamRankCardProps) {
   const config = iconMap[avatar as keyof typeof iconMap] || {
     icon: Target,
     color: 'bg-emerald-50 text-emerald-600',
@@ -179,50 +152,46 @@ function TeamRankCard({ name, avg, rank, avatar }: any) {
 
   return (
     <div className="relative overflow-hidden p-6 rounded-[2.5rem] bg-white ring-1 ring-emerald-100 shadow-sm transition-transform active:scale-[0.98]">
-      {/* Visual Rank Badge */}
-      <div className="absolute -right-2 -top-2 h-16 w-16 bg-emerald-50 rounded-full flex items-center justify-center opacity-50">
-        <span className="text-4xl font-black text-emerald-100">#{rank}</span>
-      </div>
-
       <div className="flex items-center justify-between relative z-10">
+        {/* Team Identity */}
         <div className="flex items-center gap-4">
           <div
             className={`h-14 w-14 rounded-2xl ${config.color} flex items-center justify-center shadow-sm`}
           >
-            <Icon size={30} strokeWidth={2} />
+            <Icon size={28} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="font-black text-xl text-emerald-950 uppercase tracking-tighter">
+            <h3 className="font-black text-xl text-emerald-950 uppercase tracking-tighter leading-none mb-1">
               {name}
             </h3>
-            <div className="flex items-center gap-1 mt-0.5">
-              <Zap size={10} className="text-amber-500 fill-amber-500" />
-              <span className="text-[10px] text-emerald-700/60 font-bold uppercase">
-                Active Streak
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] text-emerald-700/50 font-black uppercase tracking-[0.1em]">
+                Team
               </span>
             </div>
           </div>
         </div>
+
         <div className="text-right">
-          <p className="text-2xl font-black text-emerald-950 tracking-tighter">
-            {avg}k
-          </p>
-          <p className="text-[9px] text-emerald-700 font-black uppercase tracking-widest">
-            Team Avg
-          </p>
+          <div className="flex flex-col items-end">
+            <p className="text-3xl font-[1000] text-emerald-950 tracking-tighter leading-none mb-1">
+              {Number(total).toLocaleString()}
+            </p>
+            <p className="text-[10px] text-emerald-900/40 font-black uppercase tracking-[0.2em] mb-3">
+              Total Points
+            </p>
+
+            <div className="flex items-center gap-1.5 bg-orange-50/80 px-3 py-1 rounded-full border border-orange-100">
+              <span className="text-[10px] font-black text-orange-600 tracking-tighter">
+                {avg}k
+              </span>
+              <span className="text-[8px] font-bold text-orange-400 uppercase tracking-tighter">
+                Avg/Day
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-export const Route = createFileRoute('/leaderboard/')({
-  loader: async () => {
-    const [teamStats, individualStats] = await Promise.all([
-      getTeamLeaderboard(),
-      getIndividualLeaderboard(),
-    ])
-    return { teamStats, individualStats }
-  },
-  component: LeaderboardTab,
-})
