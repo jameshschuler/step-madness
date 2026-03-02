@@ -7,6 +7,13 @@ const dashboardSearchSchema = z.object({
   week: z.number().catch(1), // Default to week 1 if missing or invalid
 })
 
+export const Route = createFileRoute('/')({
+  validateSearch: zodValidator(dashboardSearchSchema),
+  // Pass the week from search params into our loader
+  loaderDeps: ({ search: { week } }) => ({ week }),
+  component: Dashboard,
+})
+
 function Dashboard() {
   const { week } = Route.useSearch()
 
@@ -24,47 +31,38 @@ function Dashboard() {
   }
 
   return (
-    <>
+    <div className="p-4 bg-[#fdfcf0] min-h-screen pb-24">
       {/* WEEK SELECTOR */}
-      <nav className="flex flex-col items-center mb-8 px-4">
-        {/* 4-Week Toggle */}
-        <div className="flex bg-gray-200 rounded-xl p-1 w-full max-w-sm mb-3">
+      <nav className="flex flex-col items-center mb-8">
+        <div className="flex bg-emerald-100/50 backdrop-blur-sm rounded-2xl p-1 w-full max-w-sm mb-4 border border-emerald-100/50">
           {[1, 2, 3, 4].map((w) => (
             <Link
               key={w}
               to="/"
               search={{ week: w }}
-              className={`flex-1 py-2 text-center text-sm rounded-lg transition-all ${
+              className={`flex-1 py-2 text-center text-xs font-black rounded-xl transition-all ${
                 week === w
-                  ? 'bg-white shadow-sm font-bold text-black'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white shadow-sm text-emerald-700'
+                  : 'text-emerald-900/40 hover:text-emerald-700'
               }`}
             >
-              W{w}
+              WEEK {w}
             </Link>
           ))}
         </div>
 
-        {/* Contextual Date Label */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-            {`Week ${week}`}
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-black text-emerald-800/30 uppercase tracking-[0.2em]">
+            Timeline
           </span>
-          <span className="text-xs text-gray-300">|</span>
-          <span className="text-xs text-gray-500 font-medium">
+          <div className="h-1 w-1 rounded-full bg-emerald-200" />
+          <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
             {data.weekRange}
           </span>
         </div>
       </nav>
 
       <SwipeableMatchups data={data} />
-    </>
+    </div>
   )
 }
-
-export const Route = createFileRoute('/')({
-  validateSearch: zodValidator(dashboardSearchSchema),
-  // Pass the week from search params into our loader
-  loaderDeps: ({ search: { week } }) => ({ week }),
-  component: Dashboard,
-})
