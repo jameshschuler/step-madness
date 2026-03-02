@@ -136,40 +136,34 @@ export function Matchups({ matchups }: MatchupsProps) {
               {/* AVERAGES GRID */}
               <div className="grid grid-cols-2 gap-4 my-6 px-1">
                 {/* Team 1 Stats */}
-                <div className="bg-white p-5 rounded-[2.5rem] border-2 border-emerald-500/20 shadow-sm text-center">
+                <div className="bg-white p-5 rounded-[2.5rem] border-2 border-emerald-500/20 shadow-sm text-center flex flex-col justify-center min-h-[120px]">
                   <div className="text-[10px] uppercase font-black text-emerald-700 tracking-[0.15em] mb-1 truncate px-2">
                     {match.team1.displayName}
                   </div>
 
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className="text-3xl font-black text-emerald-950 tracking-tighter">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-2xl font-black text-emerald-950 tracking-tighter leading-none">
                       {match.team1.avg}
                     </span>
-                    <span className="text-[11px] font-black text-emerald-900/40 uppercase">
-                      k
-                    </span>
-                  </div>
-                  <div className="text-[8px] font-bold text-emerald-900/30 uppercase tracking-widest mt-1">
-                    Daily Pulse
+                    <div className="text-[8px] font-bold text-emerald-900/30 uppercase tracking-widest mt-2 leading-tight">
+                      Avg Steps <br /> Per Person
+                    </div>
                   </div>
                 </div>
 
                 {/* Team 2 Stats */}
-                <div className="bg-white p-5 rounded-[2.5rem] border-2 border-rose-500/20 shadow-sm text-center">
+                <div className="bg-white p-5 rounded-[2.5rem] border-2 border-rose-500/20 shadow-sm text-center flex flex-col justify-center min-h-[120px]">
                   <div className="text-[10px] uppercase font-black text-rose-700 tracking-[0.15em] mb-1 truncate px-2">
                     {match.team2.displayName}
                   </div>
 
-                  <div className="flex items-baseline justify-center gap-0.5">
-                    <span className="text-3xl font-black text-rose-950 tracking-tighter">
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-2xl font-black text-rose-950 tracking-tighter leading-none">
                       {match.team2.avg}
                     </span>
-                    <span className="text-[11px] font-black text-rose-900/40 uppercase">
-                      k
-                    </span>
-                  </div>
-                  <div className="text-[8px] font-bold text-rose-900/30 uppercase tracking-widest mt-1">
-                    Daily Pulse
+                    <div className="text-[8px] font-bold text-rose-900/30 uppercase tracking-widest mt-2 leading-tight">
+                      Avg Steps <br /> Per Person
+                    </div>
                   </div>
                 </div>
               </div>

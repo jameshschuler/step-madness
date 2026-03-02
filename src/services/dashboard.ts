@@ -29,6 +29,9 @@ export const getDashboardData = createServerFn({ method: 'GET' })
 
     const dashboardMatchups = await Promise.all(
       weeklyMatchups.map(async (match) => {
+        const startStr = match.startDate.toISOString().split('T')[0]
+        const endStr = match.endDate.toISOString().split('T')[0]
+
         const getTeamDetails = async (teamId: number | null) => {
           if (!teamId)
             return {
@@ -45,9 +48,6 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             .from(teams)
             .where(eq(teams.id, teamId))
             .then((res) => res[0])
-
-          const startStr = match.startDate.toISOString().split('T')[0]
-          const endStr = match.endDate.toISOString().split('T')[0]
 
           // 2. Fetch Player Stats FILTERED by the matchup dates
           const stats = await db
@@ -81,16 +81,16 @@ export const getDashboardData = createServerFn({ method: 'GET' })
           )
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1
 
-          const avg =
+          const avgStepsPerPerson =
             stats.length > 0
-              ? (total / stats.length / diffDays / 1000).toFixed(1)
-              : '0.0'
+              ? Math.floor(total / stats.length).toLocaleString()
+              : '0'
 
           return {
             name: teamInfo?.name ?? 'Unknown',
             displayName: `Team ${teamInfo?.name ?? 'Unknown'}`,
             avatar: teamInfo?.avatar ?? 'Target',
-            avg,
+            avg: avgStepsPerPerson,
             total,
             players: stats,
           }

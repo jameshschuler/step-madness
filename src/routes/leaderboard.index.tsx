@@ -126,7 +126,10 @@ export function LeaderboardTab() {
               key={team.id}
               name={team.name}
               avg={team.dailyAvg || 0}
-              total={team.totalSteps || 0}
+              totalSteps={team.totalSteps || 0}
+              totalPoints={team.totalPoints || 0}
+              wins={team.wins ?? 0}
+              losses={team.losses ?? 0}
               avatar={team.avatar ?? ''}
             />
           ))}
@@ -138,12 +141,23 @@ export function LeaderboardTab() {
 
 interface TeamRankCardProps {
   name: string
-  avg: number | string
-  total: number | string
+  avg: string | number
+  totalSteps: number
+  totalPoints: number
+  wins: number
+  losses: number
   avatar: string
 }
 
-function TeamRankCard({ name, avg, total, avatar }: TeamRankCardProps) {
+function TeamRankCard({
+  name,
+  avg,
+  totalSteps,
+  totalPoints,
+  wins,
+  losses,
+  avatar,
+}: TeamRankCardProps) {
   const config = iconMap[avatar as keyof typeof iconMap] || {
     icon: Target,
     color: 'bg-emerald-50 text-emerald-600',
@@ -151,8 +165,8 @@ function TeamRankCard({ name, avg, total, avatar }: TeamRankCardProps) {
   const Icon = config.icon
 
   return (
-    <div className="relative overflow-hidden p-6 rounded-[2.5rem] bg-white ring-1 ring-emerald-100 shadow-sm transition-transform active:scale-[0.98]">
-      <div className="flex items-center justify-between relative z-10">
+    <div className="relative overflow-hidden p-6 rounded-[3rem] bg-white ring-1 ring-emerald-100 shadow-sm transition-all hover:shadow-md">
+      <div className="flex items-start justify-between relative z-10 mb-6">
         {/* Team Identity */}
         <div className="flex items-center gap-4">
           <div
@@ -161,35 +175,46 @@ function TeamRankCard({ name, avg, total, avatar }: TeamRankCardProps) {
             <Icon size={28} strokeWidth={2.5} />
           </div>
           <div>
-            <h3 className="font-black text-xl text-emerald-950 uppercase tracking-tighter leading-none mb-1">
+            <h3 className="font-black text-2xl text-emerald-950 uppercase tracking-tighter leading-none mb-1">
               {name}
             </h3>
-            <div className="flex items-center gap-1">
-              <span className="text-[9px] text-emerald-700/50 font-black uppercase tracking-[0.1em]">
-                Team
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-950 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
+                {wins}W - {losses}L
               </span>
             </div>
           </div>
         </div>
 
+        {/* Primary Points Metric */}
         <div className="text-right">
-          <div className="flex flex-col items-end">
-            <p className="text-3xl font-[1000] text-emerald-950 tracking-tighter leading-none mb-1">
-              {Number(total).toLocaleString()}
-            </p>
-            <p className="text-[10px] text-emerald-900/40 font-black uppercase tracking-[0.2em] mb-3">
-              Total Points
-            </p>
+          <p className="text-4xl font-[1000] text-emerald-950 tracking-tighter leading-none">
+            {totalPoints}
+          </p>
+          <p className="text-[9px] text-emerald-900/40 font-black uppercase tracking-[0.2em] mt-1">
+            Points
+          </p>
+        </div>
+      </div>
 
-            <div className="flex items-center gap-1.5 bg-orange-50/80 px-3 py-1 rounded-full border border-orange-100">
-              <span className="text-[10px] font-black text-orange-600 tracking-tighter">
-                {avg}k
-              </span>
-              <span className="text-[8px] font-bold text-orange-400 uppercase tracking-tighter">
-                Avg/Day
-              </span>
-            </div>
-          </div>
+      {/* Secondary Stats Row */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex items-center justify-between bg-emerald-50/50 px-4 py-3 rounded-2xl border border-emerald-100/50">
+          <span className="text-[8px] font-black text-emerald-900/40 uppercase tracking-widest">
+            Steps
+          </span>
+          <span className="text-xs font-black text-emerald-950 tracking-tight">
+            {Number(totalSteps).toLocaleString()}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between bg-orange-50/50 px-4 py-3 rounded-2xl border border-orange-100/50">
+          <span className="text-[8px] font-black text-orange-900/40 uppercase tracking-widest">
+            Avg/Day
+          </span>
+          <span className="text-xs font-black text-orange-700 tracking-tight">
+            {avg}k
+          </span>
         </div>
       </div>
     </div>
