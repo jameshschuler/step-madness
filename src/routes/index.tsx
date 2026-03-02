@@ -2,33 +2,38 @@ import { SwipeableMatchups } from '@/components/SwipeableMatchups'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { z } from 'zod'
 import { zodValidator } from '@tanstack/zod-adapter'
+import { getDashboardData } from '@/services/dashboard'
 
 const dashboardSearchSchema = z.object({
-  week: z.number().catch(1), // Default to week 1 if missing or invalid
+  week: z.number().catch(1),
 })
 
 export const Route = createFileRoute('/')({
   validateSearch: zodValidator(dashboardSearchSchema),
-  // Pass the week from search params into our loader
   loaderDeps: ({ search: { week } }) => ({ week }),
+  loader: ({ deps: { week } }) => getDashboardData({ data: week }),
   component: Dashboard,
 })
 
 function Dashboard() {
   const { week } = Route.useSearch()
+  const matchupsData = Route.useLoaderData()
 
-  const data = {
-    weekRange: 'Mar 1 — Mar 7, 2026',
-    userSteps: 8450,
-    opponentSteps: 9120,
-    teamAvg: 10.2,
-    oppTeamAvg: 11.5,
-    leaderboard: [
-      { name: 'YOU', steps: 8450 },
-      { name: 'Alice', steps: 9800 },
-      { name: 'Bob', steps: 7600 },
-    ],
-  }
+  const weekRange = matchupsData[0]
+    ? (() => {
+        const start = new Date(matchupsData[0].startDate)
+        const end = new Date(start)
+        end.setDate(start.getDate() + 6)
+
+        const options: Intl.DateTimeFormatOptions = {
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC', // Keep that UTC fix from earlier!
+        }
+
+        return `${start.toLocaleDateString('en-US', options)} — ${end.toLocaleDateString('en-US', options)}`
+      })()
+    : 'No games this week'
 
   return (
     <div className="p-4 bg-[#fdfcf0] min-h-screen pb-24">
@@ -57,12 +62,18 @@ function Dashboard() {
           </span>
           <div className="h-1 w-1 rounded-full bg-emerald-200" />
           <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
-            {data.weekRange}
+            {weekRange}
           </span>
         </div>
       </nav>
 
-      <SwipeableMatchups data={data} />
+      {matchupsData.length > 0 ? (
+        <SwipeableMatchups matchups={matchupsData} />
+      ) : (
+        <div className="text-center py-20 text-emerald-900/40 font-bold uppercase italic">
+          No matchups found
+        </div>
+      )}
     </div>
   )
 }
