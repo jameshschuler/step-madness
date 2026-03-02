@@ -23,7 +23,7 @@ const uploadStepData = createServerFn({ method: 'POST' })
 
     await db.transaction(async (tx) => {
       for (const row of data) {
-        // 1. Get or Create the Player
+        // 1. Get the Player
         // We use the name as a unique identifier for this simplified tournament
         const existingPlayer = await tx
           .select()
