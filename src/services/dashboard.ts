@@ -6,6 +6,7 @@ import {
   teamPlayers,
   dailyPerformance,
   teams,
+  challenges,
 } from '@/db/schema'
 import { and, between, eq, sql } from 'drizzle-orm'
 import z from 'zod'
@@ -15,7 +16,16 @@ export const getDashboardData = createServerFn({ method: 'GET' })
     z.preprocess((val) => Number(val), z.number().min(1).catch(1)),
   )
   .handler(async ({ data: week }) => {
-    // 1. Fetch the matchups for the specific week to get their date ranges
+    const challenge = await db
+      .select({
+        lastSynced: challenges.lastSynced,
+        name: challenges.name,
+      })
+      .from(challenges)
+      .limit(1)
+      .then((res) => res[0])
+
+    // Fetch the matchups for the specific week to get their date ranges
     const weeklyMatchups = await db
       .select({
         id: matchups.id,
@@ -75,12 +85,6 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             0,
           )
 
-          // Calculate the number of days in the matchup to get an accurate daily average
-          const diffTime = Math.abs(
-            match.endDate.getTime() - match.startDate.getTime(),
-          )
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1
-
           const avgStepsPerPerson =
             stats.length > 0
               ? Math.floor(total / stats.length).toLocaleString()
@@ -111,5 +115,8 @@ export const getDashboardData = createServerFn({ method: 'GET' })
       }),
     )
 
-    return dashboardMatchups
+    return {
+      challenge,
+      matchups: dashboardMatchups,
+    }
   })

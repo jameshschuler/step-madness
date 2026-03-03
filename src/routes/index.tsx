@@ -17,11 +17,11 @@ export const Route = createFileRoute('/')({
 
 function Dashboard() {
   const { week } = Route.useSearch()
-  const matchupsData = Route.useLoaderData()
+  const { challenge, matchups } = Route.useLoaderData()
 
-  const weekRange = matchupsData[0]
+  const weekRange = matchups[0]
     ? (() => {
-        const start = new Date(matchupsData[0].startDate)
+        const start = new Date(matchups[0].startDate)
         const end = new Date(start)
         end.setDate(start.getDate() + 6)
 
@@ -37,7 +37,6 @@ function Dashboard() {
 
   return (
     <div className="p-4 bg-[#fdfcf0] min-h-screen pb-24">
-      {/* WEEK SELECTOR */}
       <nav className="flex flex-col items-center mb-8">
         <div className="flex bg-emerald-100/50 backdrop-blur-sm rounded-2xl p-1 w-full max-w-sm mb-4 border border-emerald-100/50">
           {[1, 2, 3, 4].map((w) => (
@@ -56,19 +55,37 @@ function Dashboard() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-black text-emerald-800/30 uppercase tracking-[0.2em]">
-            Timeline
-          </span>
-          <div className="h-1 w-1 rounded-full bg-emerald-200" />
-          <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
-            {weekRange}
-          </span>
+        <div className="flex flex-col items-center gap-2">
+          {/* Timeline Row */}
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black text-emerald-800/30 uppercase tracking-[0.2em]">
+              Timeline
+            </span>
+            <div className="h-1 w-1 rounded-full bg-emerald-200" />
+            <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
+              {weekRange}
+            </span>
+          </div>
+
+          {/* LAST SYNCED INDICATOR */}
+          {challenge.lastSynced && (
+            <div className="flex items-center gap-2 px-3 py-1 bg-white/50 rounded-full border border-emerald-100/50 shadow-sm">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black text-emerald-900/40 uppercase tracking-[0.15em]">
+                Updated:{' '}
+                {new Date(challenge.lastSynced).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  weekday: 'short',
+                })}
+              </span>
+            </div>
+          )}
         </div>
       </nav>
 
-      {matchupsData.length > 0 ? (
-        <Matchups matchups={matchupsData} />
+      {matchups.length > 0 ? (
+        <Matchups matchups={matchups} />
       ) : (
         <div className="text-center py-20 text-emerald-900/40 font-bold uppercase italic">
           No matchups found

@@ -13,6 +13,7 @@ export const challenges = sqliteTable('challenges', {
   startDate: integer('start_date', { mode: 'timestamp' }).notNull(),
   endDate: integer('end_date', { mode: 'timestamp' }).notNull(),
   slug: text('slug').unique().notNull(),
+  lastSynced: integer('last_synced', { mode: 'timestamp' }),
 })
 
 // 2. Teams

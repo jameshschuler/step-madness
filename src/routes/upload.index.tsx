@@ -4,7 +4,7 @@ import { Upload, Loader2 } from 'lucide-react'
 import Papa from 'papaparse'
 import { createServerFn } from '@tanstack/react-start'
 import z from 'zod'
-import { dailyPerformance, players } from '@/db/schema'
+import { challenges, dailyPerformance, players } from '@/db/schema'
 import { db } from '@/db'
 import { eq } from 'drizzle-orm'
 
@@ -22,6 +22,11 @@ const uploadStepData = createServerFn({ method: 'POST' })
     }
 
     await db.transaction(async (tx) => {
+      await tx
+        .update(challenges)
+        .set({ lastSynced: new Date() })
+        .where(eq(challenges.slug, 'spring-2026'))
+
       for (const row of data) {
         // 1. Get the Player
         // We use the name as a unique identifier for this simplified tournament

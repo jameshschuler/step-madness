@@ -1,0 +1,1 @@
+ALTER TABLE `challenges` ADD `last_synced` integer;
