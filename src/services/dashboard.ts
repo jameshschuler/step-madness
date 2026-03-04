@@ -7,6 +7,7 @@ import {
   dailyPerformance,
   teams,
   challenges,
+  leaderboard,
 } from '@/db/schema'
 import { and, between, eq, sql, desc } from 'drizzle-orm'
 import z from 'zod'
@@ -54,8 +55,14 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             }
 
           const teamInfo = await db
-            .select({ name: teams.name, avatar: teams.avatar })
+            .select({
+              name: teams.name,
+              avatar: teams.avatar,
+              wins: leaderboard.wins,
+              losses: leaderboard.losses,
+            })
             .from(teams)
+            .leftJoin(leaderboard, eq(teams.id, leaderboard.teamId))
             .where(eq(teams.id, teamId))
             .then((res) => res[0])
 
@@ -97,6 +104,8 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             avatar: teamInfo?.avatar ?? 'Target',
             avg: avgStepsPerPerson,
             total,
+            wins: teamInfo?.wins ?? 0,
+            losses: teamInfo?.losses ?? 0,
             players: stats,
           }
         }

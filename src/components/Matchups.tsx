@@ -14,6 +14,8 @@ interface Team {
   avatar: string
   avg: string | number
   total: number
+  wins: number
+  losses: number
   players: {
     name: string
     id: number
@@ -86,8 +88,11 @@ export function Matchups({ matchups }: MatchupsProps) {
                   <div className="text-center flex-1">
                     <div className="flex flex-col items-center justify-center gap-1 mb-1">
                       <Team1Icon size={16} className="text-emerald-500/50" />
-                      <div className="text-emerald-600/50 text-[10px] font-black uppercase truncate max-w-[80px]">
+                      <div className="text-emerald-600/50 text-[12px] font-black uppercase truncate max-w-[100px]">
                         {match.team1.displayName}
+                      </div>
+                      <div className="inline-block bg-emerald-100/50 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full mb-2 uppercase tracking-tighter">
+                        {match.team1.wins} - {match.team1.losses}
                       </div>
                     </div>
                     <div className="text-4xl font-black text-emerald-950 tracking-tighter">
@@ -106,8 +111,11 @@ export function Matchups({ matchups }: MatchupsProps) {
                   <div className="text-center flex-1">
                     <div className="flex flex-col items-center justify-center gap-1 mb-1">
                       <Team2Icon size={16} className="text-rose-500/50" />
-                      <div className="text-rose-600/50 text-[10px] font-black uppercase truncate max-w-[80px]">
+                      <div className="text-rose-600/50 text-[12px] font-black uppercase truncate max-w-[100px]">
                         {match.team2.displayName}
+                      </div>
+                      <div className="inline-block bg-rose-100/50 text-rose-800 text-[10px] font-black px-2 py-0.5 rounded-full mb-2 uppercase tracking-tighter">
+                        {match.team2.wins} - {match.team2.losses}
                       </div>
                     </div>
                     <div className="text-4xl font-black text-emerald-950 tracking-tighter">

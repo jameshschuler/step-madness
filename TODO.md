@@ -1,4 +1,3 @@
-- Add team record to wherever team is displayed (reusable component)
 - Add admin "Finalize week" page with action to update leaderboard and matchup_results. Should also "finalize" or "lock" week
 - Show leaderboard and matchup_results on UI
 - change avg steps per person to avg steps per person per day

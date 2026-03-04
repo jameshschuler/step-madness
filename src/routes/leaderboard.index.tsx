@@ -180,7 +180,7 @@ function TeamRankCard({
             </h3>
             <div className="flex items-center gap-2">
               <span className="bg-emerald-950 text-white text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-wider">
-                {wins}W - {losses}L
+                {wins} - {losses}
               </span>
             </div>
           </div>
