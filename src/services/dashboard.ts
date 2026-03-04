@@ -8,7 +8,7 @@ import {
   teams,
   challenges,
 } from '@/db/schema'
-import { and, between, eq, sql } from 'drizzle-orm'
+import { and, between, eq, sql, desc } from 'drizzle-orm'
 import z from 'zod'
 
 export const getDashboardData = createServerFn({ method: 'GET' })
@@ -79,6 +79,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             )
             .where(eq(teamPlayers.teamId, teamId))
             .groupBy(players.id)
+            .orderBy(desc(sql`SUM(${dailyPerformance.stepCount})`))
 
           const total = stats.reduce(
             (acc, p) => acc + (Number(p.steps) || 0),

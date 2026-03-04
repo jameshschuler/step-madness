@@ -141,7 +141,7 @@ export function LeaderboardTab() {
 
 interface TeamRankCardProps {
   name: string
-  avg: string | number
+  avg: number
   totalSteps: number
   totalPoints: number
   wins: number
@@ -213,7 +213,7 @@ function TeamRankCard({
             Avg/Day
           </span>
           <span className="text-xs font-black text-orange-700 tracking-tight">
-            {avg}k
+            {Number(avg.toFixed(0)).toLocaleString()}
           </span>
         </div>
       </div>

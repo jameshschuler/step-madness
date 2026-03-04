@@ -1,7 +1,9 @@
-- Add "Finalize week" page with action to update leaderboard and matchup_results
-- Add team record to wherever team is displayed
+- Add team record to wherever team is displayed (reusable component)
+- Add admin "Finalize week" page with action to update leaderboard and matchup_results. Should also "finalize" or "lock" week
 - Show leaderboard and matchup_results on UI
-- Show a "last synced" datetime on dashboard
+- change avg steps per person to avg steps per person per day
+- Implement "locked" weeks during upload flow (e.g. dates/steps after a week has ended should be ignored)
+  - Example: After 3/8, all steps from 3/1-3/8 should be ignored
 
 Win = 2
 Loser = 1
@@ -29,36 +31,3 @@ Seed #2 vs Seed #3
 Round #2 (Friday, March 27th - Tuesday, March 31st)
 Winner # vs Winner #
 Loser # vs Loser #
-
-Get current week - [ ] Write design doc for march madness for coast to coast steppers - [ ] Points are updated once end date for week has passed
-
-                            BracketWalk
-       -----------------------------------------------------
-          Last Week   |   **This Week** |   Next Week
-       -----------------------------------------------------
-                February 16 — February 22, 2026
-
-       /---------------------------------------------------\
-       | <               MATCHUP 1 OF 3                  > |
-       | ------------------------------------------------- |
-       |    (YOU)                             (OPPONENT)   |
-       |    8,450         vs  14h 22m           9,120      |
-       |                                                   |
-       |    [======== BLUE =======|======== RED ========]  |
-       |                      ● ○ ○                        |
-       \---------------------------------------------------/
-
-       [ Your Team Avg: 10.2k ]   [ Opponent Team Avg: 11.5k ]
-
-       ---------------- TEAM LEADERBOARDS ------------------
-         YOUR TEAM                |      OPPONENT TEAM
-       ---------------------------|-------------------------
-       1. YOU ......... 8,450     |  1. Mike ........ 9,120
-       2. Sarah ....... 7,900     |  2. Jan ......... 8,850
-       3. Dave ........ 6,200     |  3. Chris ....... 7,100
-       -----------------------------------------------------
-
-       _____________________________________________________
-      |             |               |               |       |
-      |   [Dash]    | [LEADERBOARD] |    [Teams]    |       |
-      |_____________|_______________|_______________|_______|
