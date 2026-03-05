@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TeamsIndexRouteImport } from '../routes/admin.index.tsx
+import { Route as TeamsIndexRouteImport } from './routes/teams.index'
 import { Route as ScheduleIndexRouteImport } from './routes/schedule.index'
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'

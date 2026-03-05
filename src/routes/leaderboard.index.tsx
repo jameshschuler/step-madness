@@ -199,21 +199,23 @@ function TeamRankCard({
 
       {/* Secondary Stats Row */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center justify-between bg-emerald-50/50 px-4 py-3 rounded-2xl border border-emerald-100/50">
-          <span className="text-[8px] font-black text-emerald-900/40 uppercase tracking-widest">
-            Steps
+        {/* Total Steps Box */}
+        <div className="flex flex-col items-center justify-center bg-emerald-50/50 p-2 rounded-2xl border border-emerald-100/50">
+          <span className="text-[7px] font-black text-emerald-900/40 uppercase tracking-[0.2em] mb-1 text-center">
+            Total Steps
           </span>
-          <span className="text-xs font-black text-emerald-950 tracking-tight">
+          <span className="text-[14px] font-[1000] text-emerald-950 tracking-tight leading-none text-center">
             {Number(totalSteps).toLocaleString()}
           </span>
         </div>
 
-        <div className="flex items-center justify-between bg-orange-50/50 px-4 py-3 rounded-2xl border border-orange-100/50">
-          <span className="text-[8px] font-black text-orange-900/40 uppercase tracking-widest">
-            Avg/Day
+        {/* Daily Avg Box */}
+        <div className="flex flex-col items-center justify-center bg-orange-50/50 p-2 rounded-2xl border border-orange-100/50">
+          <span className="text-[7px] font-black text-orange-900/40 uppercase tracking-[0.2em] mb-1 text-center">
+            Daily Avg
           </span>
-          <span className="text-xs font-black text-orange-700 tracking-tight">
-            {Number(avg.toFixed(0)).toLocaleString()}
+          <span className="text-[14px] font-[1000] text-orange-700 tracking-tight leading-none text-center">
+            {avg.toLocaleString()}
           </span>
         </div>
       </div>

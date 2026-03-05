@@ -32,6 +32,12 @@ export const getIndividualLeaderboard = createServerFn({
 
 export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
   async () => {
+    const daysResult = await db
+      .select({ count: sql<number>`count(distinct ${dailyPerformance.date})` })
+      .from(dailyPerformance)
+
+    const daysElapsed = daysResult[0]?.count || 1
+
     const result = await db
       .select({
         id: teams.id,
@@ -42,9 +48,9 @@ export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
         wins: leaderboard.wins,
         losses: leaderboard.losses,
         // Calculated Stats
-        dailyAvg: sql<number>`round(avg(${dailyPerformance.stepCount}), 1)`,
         totalSteps: sql<number>`sum(${dailyPerformance.stepCount})`,
         playerCount: sql<number>`count(distinct ${players.id})`,
+        daysActive: sql<number>`COUNT(DISTINCT ${dailyPerformance.date})`,
       })
       .from(teams)
       // Join with the leaderboard table to get points/record
@@ -58,13 +64,20 @@ export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
         leaderboard.wins,
         leaderboard.losses,
       )
-      .orderBy(
-        // Primary sort: Points (3 for Win, 1 for Participation, etc.)
-        desc(leaderboard.totalPoints),
-        // Secondary sort: Average steps (Tie-breaker)
-        desc(sql`avg(${dailyPerformance.stepCount})`),
-      )
 
+    //return result
     return result
+      .map((team) => {
+        const steps = Number(team.totalSteps) || 0
+        const members = Number(team.playerCount) || 1
+        const days = Number(team.daysActive) || 1
+
+        return {
+          ...team,
+          // (Total / Members) / Days
+          dailyAvg: Math.floor(steps / members / days).toLocaleString(),
+        }
+      })
+      .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
   },
 )
