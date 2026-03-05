@@ -73,6 +73,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
               id: players.id,
               // We use a null check for steps because leftJoin might return null for no-activity days
               steps: sql<number>`COALESCE(SUM(${dailyPerformance.stepCount}), 0)`,
+              activeDays: sql<number>`COUNT(DISTINCT ${dailyPerformance.date})`,
             })
             .from(players)
             .innerJoin(teamPlayers, eq(players.id, teamPlayers.playerId))
@@ -92,17 +93,21 @@ export const getDashboardData = createServerFn({ method: 'GET' })
             (acc, p) => acc + (Number(p.steps) || 0),
             0,
           )
+          const daysElapsed = Math.max(
+            ...stats.map((p) => Number(p.activeDays)),
+            1,
+          )
 
-          const avgStepsPerPerson =
+          const avgStepsPerPersonPerDay =
             stats.length > 0
-              ? Math.floor(total / stats.length).toLocaleString()
+              ? Math.floor(total / stats.length / daysElapsed).toLocaleString()
               : '0'
 
           return {
             name: teamInfo?.name ?? 'Unknown',
             displayName: `Team ${teamInfo?.name ?? 'Unknown'}`,
             avatar: teamInfo?.avatar ?? 'Target',
-            avg: avgStepsPerPerson,
+            avgStepsPerPersonPerDay,
             total,
             wins: teamInfo?.wins ?? 0,
             losses: teamInfo?.losses ?? 0,

@@ -1,6 +1,5 @@
 - Add admin "Finalize week" page with action to update leaderboard and matchup_results. Should also "finalize" or "lock" week
-- Show leaderboard and matchup_results on UI
-- change avg steps per person to avg steps per person per day
+- Schedule page should display leaderboard and matchup_results on UI
 - Implement "locked" weeks during upload flow (e.g. dates/steps after a week has ended should be ignored)
   - Example: After 3/8, all steps from 3/1-3/8 should be ignored
 

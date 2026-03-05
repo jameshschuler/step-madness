@@ -12,7 +12,7 @@ interface Team {
   name: string
   displayName: string
   avatar: string
-  avg: string | number
+  avgStepsPerPersonPerDay: number
   total: number
   wins: number
   losses: number
@@ -79,60 +79,66 @@ export function Matchups({ matchups }: MatchupsProps) {
           return (
             <CarouselItem key={match.id}>
               {/* MAIN MATCHUP CARD */}
-              <section className="bg-white rounded-[2.5rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100/50 mx-1">
+              <section className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-emerald-100/50 mx-1">
                 <div className="text-center text-[10px] font-black tracking-[0.2em] text-emerald-800/40 mb-6 uppercase">
                   Matchup {idx + 1} of {matchups.length}
                 </div>
 
-                <div className="flex justify-between items-center mb-8">
-                  <div className="text-center flex-1">
-                    <div className="flex flex-col items-center justify-center gap-1 mb-1">
+                <div className="flex justify-between items-center mb-8 gap-1">
+                  {/* Team 1 Stats */}
+                  <div className="text-center flex-1 min-w-0">
+                    {' '}
+                    {/* min-w-0 allows truncation/shrinking to work */}
+                    <div className="flex flex-col items-center justify-center gap-1 mb-2">
                       <Team1Icon size={16} className="text-emerald-500/50" />
-                      <div className="text-emerald-600/50 text-[12px] font-black uppercase truncate max-w-[100px]">
+                      <div className="text-emerald-600/50 text-[10px] font-black uppercase truncate w-full px-1">
                         {match.team1.displayName}
                       </div>
-                      <div className="inline-block bg-emerald-100/50 text-emerald-800 text-[10px] font-black px-2 py-0.5 rounded-full mb-2 uppercase tracking-tighter">
+                      <div className="inline-block bg-emerald-100/50 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
                         {match.team1.wins} - {match.team1.losses}
                       </div>
                     </div>
-                    <div className="text-4xl font-black text-emerald-950 tracking-tighter">
+                    {/* Reduced font size and tighter tracking for high counts */}
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-emerald-950 -tracking-[0.05em] leading-none">
                       {match.team1.total.toLocaleString()}
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-center px-4">
-                    <div className="h-10 w-[1px] bg-gradient-to-b from-transparent via-emerald-100 to-transparent" />
-                    <div className="my-2 bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-[10px] font-black border border-orange-100">
+                  {/* Center Divider */}
+                  <div className="flex flex-col items-center px-1 shrink-0">
+                    <div className="h-8 w-[1px] bg-gradient-to-b from-transparent via-emerald-100 to-transparent" />
+                    <div className="my-1 bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full text-[9px] font-black border border-orange-100">
                       VS
                     </div>
-                    <div className="h-10 w-[1px] bg-gradient-to-b from-transparent via-emerald-100 to-transparent" />
+                    <div className="h-8 w-[1px] bg-gradient-to-b from-transparent via-emerald-100 to-transparent" />
                   </div>
 
-                  <div className="text-center flex-1">
-                    <div className="flex flex-col items-center justify-center gap-1 mb-1">
+                  {/* Team 2 Stats */}
+                  <div className="text-center flex-1 min-w-0">
+                    <div className="flex flex-col items-center justify-center gap-1 mb-2">
                       <Team2Icon size={16} className="text-rose-500/50" />
-                      <div className="text-rose-600/50 text-[12px] font-black uppercase truncate max-w-[100px]">
+                      <div className="text-rose-600/50 text-[10px] font-black uppercase truncate w-full px-1">
                         {match.team2.displayName}
                       </div>
-                      <div className="inline-block bg-rose-100/50 text-rose-800 text-[10px] font-black px-2 py-0.5 rounded-full mb-2 uppercase tracking-tighter">
+                      <div className="inline-block bg-rose-100/50 text-rose-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
                         {match.team2.wins} - {match.team2.losses}
                       </div>
                     </div>
-                    <div className="text-4xl font-black text-emerald-950 tracking-tighter">
+                    <div className="text-2xl sm:text-3xl md:text-4xl font-black text-emerald-950 -tracking-[0.05em] leading-none">
                       {match.team2.total.toLocaleString()}
                     </div>
                   </div>
                 </div>
 
-                {/* SPRING PROGRESS BAR (Tug of War) */}
+                {/* Progress Bar Container */}
                 <div className="h-4 w-full bg-emerald-50 rounded-full flex overflow-hidden p-1 ring-1 ring-emerald-100/50">
                   <div
                     className="bg-gradient-to-r from-emerald-400 to-teal-400 h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(52,211,153,0.3)]"
                     style={{ width: `${t1Width}%` }}
                   />
                   <div
-                    className="bg-transparent h-full transition-all"
-                    style={{ width: '2%' }} // Tiny gap for aesthetic
+                    className="bg-transparent h-full"
+                    style={{ width: '1%' }}
                   />
                   <div
                     className="bg-gradient-to-r from-rose-300 to-orange-300 h-full rounded-full transition-all duration-1000"
@@ -151,10 +157,10 @@ export function Matchups({ matchups }: MatchupsProps) {
 
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-2xl font-black text-emerald-950 tracking-tighter leading-none">
-                      {match.team1.avg}
+                      {match.team1.avgStepsPerPersonPerDay}
                     </span>
                     <div className="text-[8px] font-bold text-emerald-900/30 uppercase tracking-widest mt-2 leading-tight">
-                      Avg Steps <br /> Per Person
+                      Daily Avg <br /> Per Person
                     </div>
                   </div>
                 </div>
@@ -167,10 +173,10 @@ export function Matchups({ matchups }: MatchupsProps) {
 
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-2xl font-black text-rose-950 tracking-tighter leading-none">
-                      {match.team2.avg}
+                      {match.team2.avgStepsPerPersonPerDay}
                     </span>
                     <div className="text-[8px] font-bold text-rose-900/30 uppercase tracking-widest mt-2 leading-tight">
-                      Avg Steps <br /> Per Person
+                      Daily Avg <br /> Per Person
                     </div>
                   </div>
                 </div>

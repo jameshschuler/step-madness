@@ -19,6 +19,19 @@ function Dashboard() {
   const { week } = Route.useSearch()
   const { challenge, matchups } = Route.useLoaderData()
 
+  const daysRemaining = matchups[0]
+    ? (() => {
+        const now = new Date()
+        const end = new Date(matchups[0].endDate)
+
+        // Calculate difference in milliseconds
+        const diff = end.getTime() - now.getTime()
+        const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+
+        return days
+      })()
+    : null
+
   const weekRange = matchups[0]
     ? (() => {
         const start = new Date(matchups[0].startDate)
@@ -65,6 +78,25 @@ function Dashboard() {
             <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
               {weekRange}
             </span>
+            {daysRemaining !== null &&
+              daysRemaining > 0 &&
+              daysRemaining <= 7 && (
+                <>
+                  <div className="h-1 w-1 rounded-full bg-emerald-200" />
+                  <span className="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter animate-pulse">
+                    {daysRemaining} {daysRemaining === 1 ? 'Day' : 'Days'} Left
+                  </span>
+                </>
+              )}
+
+            {daysRemaining !== null && daysRemaining <= 0 && (
+              <>
+                <div className="h-1 w-1 rounded-full bg-emerald-200" />
+                <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                  Final Result
+                </span>
+              </>
+            )}
           </div>
 
           {/* LAST SYNCED INDICATOR */}
@@ -72,7 +104,7 @@ function Dashboard() {
             <div className="flex items-center gap-2 px-3 py-1 bg-white/50 rounded-full border border-emerald-100/50 shadow-sm">
               <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[9px] font-black text-emerald-900/40 uppercase tracking-[0.15em]">
-                Updated:{' '}
+                Last Synced:{' '}
                 {new Date(challenge.lastSynced).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
