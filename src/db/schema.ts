@@ -85,7 +85,6 @@ export const matchups = sqliteTable('matchups', {
   ),
 })
 
-// 7. Matchup Results (The Scoreboard)
 export const matchupResults = sqliteTable('matchup_results', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   matchupId: integer('matchup_id').references(() => matchups.id),
@@ -95,7 +94,7 @@ export const matchupResults = sqliteTable('matchup_results', {
   team2TotalSteps: integer('team2_total_steps').default(0),
 
   // Final calculated points for the Leaderboard
-  team1Points: integer('team1_points').default(0), // (Win? 3 : 0) + (Loser? 1 : 0) + (Avg>6k? 1 : 0)
+  team1Points: integer('team1_points').default(0), // (Win? 2 : 0) + (Loser? 1 : 0) + (Avg per person per day>6k? 1 : 0)
   team2Points: integer('team2_points').default(0),
 
   isFinalized: integer('is_finalized', { mode: 'boolean' }).default(false),

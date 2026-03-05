@@ -32,12 +32,6 @@ export const getIndividualLeaderboard = createServerFn({
 
 export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const daysResult = await db
-      .select({ count: sql<number>`count(distinct ${dailyPerformance.date})` })
-      .from(dailyPerformance)
-
-    const daysElapsed = daysResult[0]?.count || 1
-
     const result = await db
       .select({
         id: teams.id,
@@ -65,7 +59,6 @@ export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
         leaderboard.losses,
       )
 
-    //return result
     return result
       .map((team) => {
         const steps = Number(team.totalSteps) || 0
@@ -78,6 +71,10 @@ export const getTeamLeaderboard = createServerFn({ method: 'GET' }).handler(
           dailyAvg: Math.floor(steps / members / days).toLocaleString(),
         }
       })
-      .sort((a, b) => (b.totalPoints ?? 0) - (a.totalPoints ?? 0))
+      .sort((a, b) => {
+        const pointsDiff = (b.totalPoints ?? 0) - (a.totalPoints ?? 0)
+        if (pointsDiff !== 0) return pointsDiff
+        return (b.totalSteps ?? 0) - (a.totalSteps ?? 0)
+      })
   },
 )
