@@ -10,20 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as UploadIndexRouteImport } from './routes/upload.index'
-import { Route as TeamsIndexRouteImport } from './routes/teams.index'
+import { Route as TeamsIndexRouteImport } from '../routes/admin.index.tsx
 import { Route as ScheduleIndexRouteImport } from './routes/schedule.index'
 import { Route as LeaderboardIndexRouteImport } from './routes/leaderboard.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AboutIndexRouteImport } from './routes/about.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UploadIndexRoute = UploadIndexRouteImport.update({
-  id: '/upload/',
-  path: '/upload/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamsIndexRoute = TeamsIndexRouteImport.update({
@@ -41,6 +36,11 @@ const LeaderboardIndexRoute = LeaderboardIndexRouteImport.update({
   path: '/leaderboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutIndexRoute = AboutIndexRouteImport.update({
   id: '/about/',
   path: '/about/',
@@ -50,56 +50,56 @@ const AboutIndexRoute = AboutIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/schedule/': typeof ScheduleIndexRoute
   '/teams/': typeof TeamsIndexRoute
-  '/upload/': typeof UploadIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutIndexRoute
+  '/admin': typeof AdminIndexRoute
   '/leaderboard': typeof LeaderboardIndexRoute
   '/schedule': typeof ScheduleIndexRoute
   '/teams': typeof TeamsIndexRoute
-  '/upload': typeof UploadIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about/': typeof AboutIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/leaderboard/': typeof LeaderboardIndexRoute
   '/schedule/': typeof ScheduleIndexRoute
   '/teams/': typeof TeamsIndexRoute
-  '/upload/': typeof UploadIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about/'
+    | '/admin/'
     | '/leaderboard/'
     | '/schedule/'
     | '/teams/'
-    | '/upload/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/leaderboard' | '/schedule' | '/teams' | '/upload'
+  to: '/' | '/about' | '/admin' | '/leaderboard' | '/schedule' | '/teams'
   id:
     | '__root__'
     | '/'
     | '/about/'
+    | '/admin/'
     | '/leaderboard/'
     | '/schedule/'
     | '/teams/'
-    | '/upload/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutIndexRoute: typeof AboutIndexRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   LeaderboardIndexRoute: typeof LeaderboardIndexRoute
   ScheduleIndexRoute: typeof ScheduleIndexRoute
   TeamsIndexRoute: typeof TeamsIndexRoute
-  UploadIndexRoute: typeof UploadIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,13 +109,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/upload/': {
-      id: '/upload/'
-      path: '/upload'
-      fullPath: '/upload/'
-      preLoaderRoute: typeof UploadIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/': {
@@ -139,6 +132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about/': {
       id: '/about/'
       path: '/about'
@@ -152,10 +152,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutIndexRoute: AboutIndexRoute,
+  AdminIndexRoute: AdminIndexRoute,
   LeaderboardIndexRoute: LeaderboardIndexRoute,
   ScheduleIndexRoute: ScheduleIndexRoute,
   TeamsIndexRoute: TeamsIndexRoute,
-  UploadIndexRoute: UploadIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

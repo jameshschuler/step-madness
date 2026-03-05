@@ -63,7 +63,7 @@ const uploadStepData = createServerFn({ method: 'POST' })
     return { success: true, count: data.length }
   })
 
-export const Route = createFileRoute('/upload/')({
+export const Route = createFileRoute('/admin/')({
   component: UploadComponent,
 })
 
