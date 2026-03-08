@@ -51,6 +51,9 @@ export const getDashboardData = createServerFn({ method: 'GET' })
               avatar: 'Target',
               avg: 0,
               total: 0,
+              avgStepsPerPersonPerDay: '0',
+              wins: 0,
+              losses: 0,
               players: [],
             }
 

@@ -4,8 +4,30 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { getDashboardData } from '@/services/dashboard'
 import { Matchups } from '@/components/Matchups'
 
+const calculateCurrentWeek = () => {
+  // Use a plain YYYY-MM-DD string to represent the "Local Wall Clock" date
+  // This prevents the 'Timezone Shift' where 5 PM Saturday becomes Sunday UTC
+  const startDate = new Date(2026, 2, 1) // March 1st (Month is 0-indexed, so 2 = March)
+
+  // Get 'today' but strip the time so we are comparing pure dates
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+  if (today < startDate) return 1
+
+  const msPassed = today.getTime() - startDate.getTime()
+  const daysPassed = Math.floor(msPassed / (1000 * 60 * 60 * 24))
+
+  // (Days / 7) + 1.
+  // Day 0-6 = Week 1
+  // Day 7-13 = Week 2
+  const currentWeek = Math.floor(daysPassed / 7) + 1
+
+  return Math.min(currentWeek, 4)
+}
+
 const dashboardSearchSchema = z.object({
-  week: z.number().catch(1),
+  week: z.number().catch(() => calculateCurrentWeek()),
 })
 
 export const Route = createFileRoute('/')({

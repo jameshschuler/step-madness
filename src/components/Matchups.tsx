@@ -12,7 +12,7 @@ interface Team {
   name: string
   displayName: string
   avatar: string
-  avgStepsPerPersonPerDay: number
+  avgStepsPerPersonPerDay?: string
   total: number
   wins: number
   losses: number
