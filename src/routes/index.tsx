@@ -4,6 +4,40 @@ import { zodValidator } from '@tanstack/zod-adapter'
 import { getDashboardData } from '@/services/dashboard'
 import { Matchups } from '@/components/Matchups'
 
+/**
+ * Calculates the time remaining until 11:59:59 PM on the matchup's end date.
+ * @param endDate The Date object from your database
+ * @returns An object containing the breakdown or a "Completed" message
+ */
+export function getMatchupTimeRemaining(endDate: Date) {
+  const now = new Date()
+
+  // 1. Create a copy of the end date and set it to 11:59:59.999 PM local time
+  const localDeadline = new Date(endDate)
+  localDeadline.setHours(23, 59, 59, 999)
+
+  const diffInMs = localDeadline.getTime() - now.getTime()
+
+  // 2. Handle expired matchups
+  if (diffInMs <= 0) {
+    return { totalMs: 0, days: 0, hours: 0, minutes: 0, expired: true }
+  }
+
+  // 3. Extract units
+  const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diffInMs / (1000 * 60 * 60)) % 24)
+  const minutes = Math.floor((diffInMs / (1000 * 60)) % 60)
+
+  return {
+    totalMs: diffInMs,
+    days,
+    hours,
+    minutes,
+    expired: false,
+    formatted: `${days}d ${hours}h ${minutes}m remaining`,
+  }
+}
+
 const calculateCurrentWeek = () => {
   // Use a plain YYYY-MM-DD string to represent the "Local Wall Clock" date
   // This prevents the 'Timezone Shift' where 5 PM Saturday becomes Sunday UTC

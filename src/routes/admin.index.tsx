@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { Upload, Loader2 } from 'lucide-react'
+import { Upload, Loader2, CheckCircle2, Zap } from 'lucide-react'
 import Papa from 'papaparse'
 import { createServerFn } from '@tanstack/react-start'
 import z from 'zod'
 import { challenges, dailyPerformance, players } from '@/db/schema'
 import { db } from '@/db'
 import { eq } from 'drizzle-orm'
+import { finalizeWeek } from '@/services/admin'
+import { useMutation } from '@tanstack/react-query'
 
 // Server function to process the parsed data
 const uploadStepData = createServerFn({ method: 'POST' })
@@ -72,6 +74,17 @@ function UploadComponent() {
   const [isUploading, setIsUploading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
+  const [week, setWeek] = useState(1)
+
+  const {
+    mutate: handleFinalize,
+    isPending,
+    error,
+    isSuccess,
+  } = useMutation({
+    mutationFn: (data: { weekNumber: number; secret: string }) =>
+      finalizeWeek({ data }),
+  })
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -117,21 +130,78 @@ function UploadComponent() {
   }
 
   return (
-    <div className="p-4 bg-[#fdfcf0] min-h-screen flex flex-col items-center justify-center pb-24">
+    <div className="p-6 bg-[#fdfcf0] min-h-screen flex flex-col gap-6 items-center justify-start pt-12 pb-24 font-sans">
+      {/* SHARED SECRET INPUT */}
+      <div className="w-full max-w-md bg-white rounded-[2rem] p-6 shadow-sm ring-1 ring-emerald-100">
+        <label className="text-[10px] font-black uppercase tracking-widest text-emerald-800/40 ml-4 mb-2 block">
+          Admin Secret Key
+        </label>
+        <input
+          type="password"
+          value={secret}
+          onChange={(e) => setSecret(e.target.value)}
+          placeholder="••••••••"
+          className="w-full bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl px-5 py-3 text-sm font-bold text-emerald-950 focus:outline-none focus:border-emerald-400 transition-colors"
+        />
+      </div>
+
+      {/* FINALIZE WEEK CARD */}
       <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-sm ring-1 ring-emerald-100">
-        {/* SECRET INPUT FIELD */}
-        <div className="mb-6">
-          <label className="text-[10px] font-black uppercase tracking-widest text-emerald-800/40 ml-4 mb-2 block">
-            Admin Secret
-          </label>
-          <div className="relative">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
+            <Zap size={20} fill="currentColor" />
+          </div>
+          <h2 className="text-sm font-black uppercase tracking-tight text-emerald-950">
+            Finalize Standings
+          </h2>
+        </div>
+
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <label className="text-[10px] font-black uppercase tracking-widest text-emerald-800/40 ml-4 mb-2 block">
+              Week No.
+            </label>
             <input
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-              placeholder="Enter upload key..."
-              className="w-full bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl px-5 py-3 text-sm font-bold text-emerald-950 focus:outline-none focus:border-emerald-400 transition-colors"
+              type="number"
+              value={week}
+              onChange={(e) => setWeek(Number(e.target.value))}
+              className="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-3 text-sm font-bold text-emerald-950 focus:outline-none focus:border-emerald-400 transition-colors"
             />
           </div>
+          <button
+            onClick={() => handleFinalize({ weekNumber: week, secret })}
+            disabled={isPending || !secret}
+            className="flex-[2] self-end h-[52px] bg-emerald-950 hover:bg-emerald-800 disabled:bg-emerald-900/20 text-emerald-50 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-2"
+          >
+            {isPending ? (
+              <Loader2 className="animate-spin" size={16} />
+            ) : (
+              'Finalize Now'
+            )}
+          </button>
+        </div>
+
+        {isSuccess && (
+          <p className="mt-4 text-center text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center justify-center gap-1">
+            <CheckCircle2 size={12} /> Week {week} Results Published
+          </p>
+        )}
+        {error && (
+          <p className="mt-4 text-center text-[10px] font-black text-rose-500 uppercase tracking-widest">
+            {error.message}
+          </p>
+        )}
+      </div>
+
+      {/* UPLOAD CARD */}
+      <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-sm ring-1 ring-emerald-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-emerald-100 p-2 rounded-xl text-emerald-600">
+            <Upload size={20} />
+          </div>
+          <h2 className="text-sm font-black uppercase tracking-tight text-emerald-950">
+            Step Data Sync
+          </h2>
         </div>
 
         <label
@@ -152,12 +222,9 @@ function UploadComponent() {
                 size={40}
               />
             )}
-
-            <div className="text-center">
-              <span className="text-xs font-black text-emerald-900 uppercase">
-                {!secret ? 'Enter Key Above' : 'Upload CSV'}
-              </span>
-            </div>
+            <span className="text-[10px] font-black text-emerald-900 uppercase tracking-widest">
+              {!secret ? 'Enter Key Above' : 'Drop CSV Here'}
+            </span>
           </div>
           <input
             type="file"
@@ -168,18 +235,10 @@ function UploadComponent() {
           />
         </label>
 
-        {status === 'error' && (
-          <div className="mt-4 text-center">
-            <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest">
-              {errorMessage}
-            </p>
-          </div>
-        )}
-
         {status === 'success' && (
           <div className="mt-4 text-center">
-            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
-              ✓ Matchup Data Updated
+            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center justify-center gap-1">
+              <CheckCircle2 size={12} /> Sync Complete
             </p>
           </div>
         )}

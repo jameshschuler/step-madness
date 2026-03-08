@@ -11,8 +11,12 @@ import { eq, and, between, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export const finalizeWeek = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ weekNumber: z.number() }))
-  .handler(async ({ data: { weekNumber } }) => {
+  .inputValidator(z.object({ weekNumber: z.number(), secret: z.string() }))
+  .handler(async ({ data: { weekNumber, secret } }) => {
+    if (secret !== process.env.CSV_UPLOAD_SECRET) {
+      throw new Error('Unauthorized: Invalid Secret Key')
+    }
+
     return await db.transaction(async (tx) => {
       // 1. Fetch all matchups for the specified week
       const weeklyMatchups = await tx
