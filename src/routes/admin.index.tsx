@@ -137,10 +137,8 @@ function UploadComponent() {
           Admin Secret Key
         </label>
         <input
-          type="password"
           value={secret}
           onChange={(e) => setSecret(e.target.value)}
-          placeholder="••••••••"
           className="w-full bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl px-5 py-3 text-sm font-bold text-emerald-950 focus:outline-none focus:border-emerald-400 transition-colors"
         />
       </div>
