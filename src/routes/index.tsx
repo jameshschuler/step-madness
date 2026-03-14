@@ -3,6 +3,53 @@ import { z } from 'zod'
 import { zodValidator } from '@tanstack/zod-adapter'
 import { getDashboardData } from '@/services/dashboard'
 import { Matchups } from '@/components/Matchups'
+import { useState, useEffect } from 'react'
+
+interface MatchupTimerProps {
+  endDate: Date
+}
+
+export const MatchupTimer = ({ endDate }: MatchupTimerProps) => {
+  const [timeLeft, setTimeLeft] = useState(() =>
+    getMatchupTimeRemaining(endDate),
+  )
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+    const timer = setInterval(() => {
+      const updated = getMatchupTimeRemaining(endDate)
+      setTimeLeft(updated)
+      if (updated.expired) clearInterval(timer)
+    }, 60000) // Updates every minute
+
+    return () => clearInterval(timer)
+  }, [endDate])
+
+  // Prevents hydration mismatch
+  if (!isClient) return null
+
+  if (timeLeft.expired) {
+    return (
+      <span className="text-[10px] font-black text-rose-600/50 uppercase tracking-wider ml-2">
+        • Week Ended
+      </span>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 ml-2 border-l border-emerald-200 pl-3">
+      {/* Visual Dot */}
+      <div className="h-1 w-1 rounded-full bg-emerald-400 animate-pulse" />
+
+      {/* The Countdown String */}
+      <span className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.1em]">
+        Ends In: {timeLeft.days > 0 && `${timeLeft.days}D `}
+        {timeLeft.hours}H {timeLeft.minutes}M
+      </span>
+    </div>
+  )
+}
 
 /**
  * Calculates the time remaining until 11:59:59 PM on the matchup's end date.
@@ -75,24 +122,16 @@ function Dashboard() {
   const { week } = Route.useSearch()
   const { challenge, matchups } = Route.useLoaderData()
 
-  const daysRemaining = matchups[0]
-    ? (() => {
-        const now = new Date()
-        const end = new Date(matchups[0].endDate)
-
-        // Calculate difference in milliseconds
-        const diff = end.getTime() - now.getTime()
-        const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
-
-        return days
-      })()
-    : null
+  // add an extra day
+  const matchupEndDate = matchups[0] ? new Date(matchups[0].endDate) : null
+  if (matchupEndDate) {
+    matchupEndDate.setDate(matchupEndDate.getDate() + 1)
+  }
 
   const weekRange = matchups[0]
     ? (() => {
         const start = new Date(matchups[0].startDate)
-        const end = new Date(start)
-        end.setDate(start.getDate() + 6)
+        const end = new Date(matchups[0].endDate)
 
         const options: Intl.DateTimeFormatOptions = {
           month: 'short',
@@ -134,25 +173,7 @@ function Dashboard() {
             <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider">
               {weekRange}
             </span>
-            {daysRemaining !== null &&
-              daysRemaining > 0 &&
-              daysRemaining <= 7 && (
-                <>
-                  <div className="h-1 w-1 rounded-full bg-emerald-200" />
-                  <span className="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter animate-pulse">
-                    {daysRemaining} {daysRemaining === 1 ? 'Day' : 'Days'} Left
-                  </span>
-                </>
-              )}
-
-            {daysRemaining !== null && daysRemaining <= 0 && (
-              <>
-                <div className="h-1 w-1 rounded-full bg-emerald-200" />
-                <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
-                  Final Result
-                </span>
-              </>
-            )}
+            {matchupEndDate && <MatchupTimer endDate={matchupEndDate} />}
           </div>
 
           {/* LAST SYNCED INDICATOR */}
